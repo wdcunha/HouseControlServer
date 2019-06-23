@@ -19,6 +19,3 @@ git push (Enviar)
 Git Status(Status do diretorio no git)
 
 Git clone https://github.com/Brian-Luca/Html.git (clonar a pasta em outro local)
-
-
-
