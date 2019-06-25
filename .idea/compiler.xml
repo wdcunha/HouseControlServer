@@ -11,7 +11,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="HCServerMaven" target="1.5" />
-      <module name="HouseControlServer" target="7" />
+      <module name="HouseControlServer" target="6" />
     </bytecodeTargetLevel>
   </component>
 </project>
