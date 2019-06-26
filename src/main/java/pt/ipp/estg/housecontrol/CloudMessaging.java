@@ -27,7 +27,7 @@ class CloudMessaging {
         URL url = new URL("https://fcm.googleapis.com/v1/projects/housecontrolmobile/messages:send");
 
         String token = getAccessToken();
-        String tokenApp = "cuh2hmdJDuw:APA91bHWSn_8izzRva2GFtRQCSzdFOMMDDh8c8KrNml3_3IQ7jWaaqq8nZ8EpSy0o4TKYMJnt8aw2P2myqCQeScjW9_fHeWzRqNqDcvwVQ9ciRQyDIdohoqtlJlPH-tO6DvgErGSsc8A";
+        String tokenApp = "";
         String title = "sixth message from HCServer";
         String message = "Notificação FCM enviada pelo HCServer!";
         String body = "{ \"message\": {\"token\": \""+tokenApp+"\",\"notification\" : {\"title\" : \""+title+"\",\"body\" : \""+message+"\"}}}";
