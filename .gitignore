@@ -21,16 +21,17 @@
 
 # Google keys #
 google-services.json
-housecontrolmobile-firebase-adminsdk-qv0hl-b0b6bf3ff5.json
-appToken
+./src/main/resources/housecontrolmobile-firebase-adminsdk-qv0hl-b0b6bf3ff5.json
+./src/main/resources/appToken
 
-
+./src/main/resources/
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 =======
 *.iml
 .gradle
 /local.properties
+.idea/
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
