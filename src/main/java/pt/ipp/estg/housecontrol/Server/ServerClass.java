@@ -8,7 +8,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import pt.ipp.estg.housecontrol.*;
+import pt.ipp.estg.housecontrol.FirebaseClasses.DataBaseFRDManaging;
+
+import static pt.ipp.estg.housecontrol.FirebaseClasses.DataBaseFRDManaging.getAllUsers;
 
 public class ServerClass {
 
@@ -16,28 +18,37 @@ public class ServerClass {
 
     private int porta;
     private List<PrintStream> clientsList;
+//    private DataBaseFRDManaging dataBaseFRDManaging;
 
-    public ServerClass(int porta) {
+    public ServerClass(int porta) throws IOException {
         this.porta = porta;
         this.clientsList = new ArrayList<PrintStream>();
+//        dataBaseFRDManaging = new DataBaseFRDManaging();
     }
 
     public void executa () throws IOException {
         ServerSocket serverSocket = new ServerSocket(this.porta);
-        System.out.println("Porta 12345 aberta!");
+        System.out.println("Conectado na porta: "+porta);
+
 
         while (!clientIsOff) {
-            // aceita um cliente
-            Socket cliente = serverSocket.accept();
-            System.out.println("Nova conexão com o cliente " +     
-                cliente.getInetAddress().getHostAddress()
+
+//            dataBaseFRDManaging.getAllUsers();
+//            dataBaseFRDManaging.getUserFRD();
+//            dataBaseFRDManaging.writeUserFRD();
+
+            // aceita um client
+            Socket client = serverSocket.accept();
+            System.out.println("Nova conexão com o client " +
+                client.getInetAddress().getHostAddress()
             );
 
-            // adiciona envio de msg ao cliente à lista
-            PrintStream ps = new PrintStream(cliente.getOutputStream());
+
+            // adiciona envio de msg ao client à lista
+            PrintStream ps = new PrintStream(client.getOutputStream());
             this.clientsList.add(ps);
 
-            InputStream clientInput = cliente.getInputStream();
+            InputStream clientInput = client.getInputStream();
 
             // cria tratamento de msgs recebidas numa nova thread
             TreatSensorsMsg tc = new TreatSensorsMsg(clientInput, this);
