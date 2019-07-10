@@ -1,4 +1,4 @@
-package pt.ipp.estg.housecontrol;
+package pt.ipp.estg.housecontrol.FirebaseClasses;
 
 
 import java.io.FileInputStream;
@@ -16,19 +16,15 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
 
-class DataBaseFRDManaging {
+public class DataBaseFRDManaging {
+
 
     private static FirebaseDatabase database;
-    private static FirebaseApp app;
+    private static DatabaseReference usersRef;
 
-    DataBaseFRDManaging() throws IOException, FileNotFoundException {
+    public DataBaseFRDManaging() throws IOException, FileNotFoundException {
 
-    }
-
-    protected static void databaseGetInstance() throws IOException {
-
-
-        FileInputStream serviceAccount = new FileInputStream("/Users/wdcunha/ESTG/2osemestre/Des Web/TrabalhoFinal/HouseControlServer/src/main/resources/housecontrolmobile-firebase-adminsdk-qv0hl-b0b6bf3ff5.json");
+        FileInputStream serviceAccount = new FileInputStream("/Users/wdcunha/ESTG/2osemestre/Des Web/TrabalhoFinal/Archive/Exemplo-Firebase 2/src/main/java/security/housecontrolmobile-firebase-adminsdk-qv0hl-30dfe92663.json");
 
         // Initialize the app with a service account, granting admin privileges
         FirebaseOptions options = new FirebaseOptions.Builder()
@@ -39,19 +35,17 @@ class DataBaseFRDManaging {
 
         database = FirebaseDatabase.getInstance();
 
-        DatabaseReference usersRef  = database.getReference("users");
+        usersRef  = database.getReference("users");
+
+    }
+
+    public static void getAllUsers() throws IOException {
 
         System.out.println("userRef: "+usersRef);
-
-        Utilizador userDataFRD = new Utilizador();
-
-        System.out.println("got here outside onDataChange");
 
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
-                System.out.println("got here inside onDataChange");
 
                 for (DataSnapshot ds : dataSnapshot.getChildren()){
                     Utilizador userDataFRD = ds.getValue(Utilizador.class);
@@ -65,6 +59,9 @@ class DataBaseFRDManaging {
                 System.out.println("Error trying to get data from FRD: " + error);
             }
         });
+    }
+
+    public static void getUserFRD() throws IOException {
 
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -79,6 +76,10 @@ class DataBaseFRDManaging {
             }
         });
 
+    }
+
+    public static void writeUserFRD() throws IOException {
+
         Utilizador user = new Utilizador("Wellington", "qq@qq.com");
 
         String userId2 = "2";
@@ -87,8 +88,8 @@ class DataBaseFRDManaging {
 
         String userId = "3";
 
-
-        usersRef.child(userId).setValue("another text", new DatabaseReference.CompletionListener() {
+//        usersRef.child(userId).setValue("another text", new DatabaseReference.CompletionListener() {
+        usersRef.push().setValue("another text", new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if (databaseError != null) {
@@ -104,7 +105,7 @@ class DataBaseFRDManaging {
 
     public static void main(String[] args) throws IOException, JSONException {
 
-        databaseGetInstance();
+        getAllUsers();
     }
 
 }

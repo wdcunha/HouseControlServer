@@ -1,4 +1,4 @@
-package pt.ipp.estg.housecontrol;
+package pt.ipp.estg.housecontrol.FirebaseClasses;
 
 import java.io.BufferedReader;
 import java.io.File;
