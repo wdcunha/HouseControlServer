@@ -8,9 +8,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import pt.ipp.estg.housecontrol.FirebaseClasses.DataBaseFRDManaging;
-
-import static pt.ipp.estg.housecontrol.FirebaseClasses.DataBaseFRDManaging.getAllUsers;
+import pt.ipp.estg.housecontrol.FirebaseClasses.SensorsFRDManaging;
 
 public class ServerClass {
 
@@ -18,11 +16,13 @@ public class ServerClass {
 
     private int porta;
     private List<PrintStream> clientsList;
+    private SensorsFRDManaging sensorsFRDManaging;
 //    private DataBaseFRDManaging dataBaseFRDManaging;
 
     public ServerClass(int porta) throws IOException {
         this.porta = porta;
         this.clientsList = new ArrayList<PrintStream>();
+        sensorsFRDManaging = new SensorsFRDManaging();
 //        dataBaseFRDManaging = new DataBaseFRDManaging();
     }
 
@@ -33,6 +33,8 @@ public class ServerClass {
 
         while (!clientIsOff) {
 
+//            sensorsFRDManaging.getAllSensors();
+            sensorsFRDManaging.getSensorChildFRD();
 //            dataBaseFRDManaging.getAllUsers();
 //            dataBaseFRDManaging.getUserFRD();
 //            dataBaseFRDManaging.writeUserFRD();

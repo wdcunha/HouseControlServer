@@ -4,6 +4,7 @@ package pt.ipp.estg.housecontrol.FirebaseClasses;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -22,7 +23,7 @@ public class SensorsFRDManaging {
 
     public SensorsFRDManaging() throws IOException, FileNotFoundException {
 
-        FileInputStream serviceAccount = new FileInputStream("/Users/wdcunha/ESTG/2osemestre/Des Web/TrabalhoFinal/Archive/Exemplo-Firebase 2/src/main/java/security/housecontrolmobile-firebase-adminsdk-qv0hl-30dfe92663.json");
+        FileInputStream serviceAccount = new FileInputStream("/Users/wdcunha/ESTG/2osemestre/Des Web/TrabalhoFinal/HouseControlServer/src/main/resources/housecontrolmobile-firebase-adminsdk-qv0hl-0ab5cb2e4d.json");
 
         // Initialize the app with a service account, granting admin privileges
         FirebaseOptions options = new FirebaseOptions.Builder()
@@ -39,16 +40,39 @@ public class SensorsFRDManaging {
 
     public static void getAllSensors() throws IOException {
 
-        System.out.println("userRef: "+sensorsRef);
+        System.out.println("sensorsRef: "+sensorsRef);
 
         sensorsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 for (DataSnapshot ds : dataSnapshot.getChildren()){
-                    Utilizador userDataFRD = ds.getValue(Utilizador.class);
-                    System.out.println("Nome: " + userDataFRD.getNome());
-                    System.out.println("Email: " + userDataFRD.getEmail());
+
+                    Object obj = dataSnapshot.getValue();
+                    System.out.println("object: "+obj);
+
+                    switch (ds.getKey()){
+                        case "blinder":
+                            System.out.println("blinder getKey: "+ds.getKey());
+                            System.out.println("blinder getValue: "+ds.getValue().toString());
+                            break;
+                        case "door":
+                            System.out.println("door getKey: "+ds.getKey());
+                            System.out.println("door getValue: "+ds.getValue().toString());
+                            break;
+                        case "hvac":
+                            System.out.println("hvac getKey: "+ds.getKey());
+                            System.out.println("hvac getValue: "+ds.getValue().toString());
+                            break;
+                        case "light":
+                            System.out.println("light getKey: "+ds.getKey());
+                            System.out.println("light getValue: "+ds.getValue().toString());
+                            break;
+                        case "temperature":
+                            System.out.println("temperature getKey: "+ds.getKey());
+                            System.out.println("temperature getValue: "+ds.getValue().toString());
+                            break;
+                    }
                 }
             }
 
@@ -59,26 +83,42 @@ public class SensorsFRDManaging {
         });
     }
 
-    public static void getSensorFRD() throws IOException {
+    public static void getSensorChildFRD() throws IOException {
 
-//        sensorsRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                Object obj = dataSnapshot.getValue();
-//                System.out.println("object: "+obj);
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                System.out.println("The read failed: " + databaseError.getCode());
-//            }
-//        });
-    }
+        sensorsRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                System.out.println("onChildAdded: " + dataSnapshot+" "+ s);
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                System.out.println("onChildChanged: " + dataSnapshot+" "+ s);
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                System.out.println("onChildRemoved: " + dataSnapshot);
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                System.out.println("onChildMoved: " + dataSnapshot+" "+ s);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("Error onCancelled when trying to get data from FRD via ChildEventListener in SensorsFRDManaging class: " + databaseError);
+
+            }
+        });    }
 
 
     public static void writeSensorFRD(String value, String sensor) throws IOException {
-
-//        sensorsRef.child(sensor).setValueAsync(value);
 
         sensorsRef.child(sensor).setValue(value, new DatabaseReference.CompletionListener() {
             @Override
