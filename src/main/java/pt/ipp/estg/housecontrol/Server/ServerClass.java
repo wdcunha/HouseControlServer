@@ -17,27 +17,26 @@ public class ServerClass {
     private int porta;
     private List<PrintStream> clientsList;
     private SensorsFRDManaging sensorsFRDManaging;
-//    private DataBaseFRDManaging dataBaseFRDManaging;
+
+    public ServerClass() {
+    }
 
     public ServerClass(int porta) throws IOException {
         this.porta = porta;
         this.clientsList = new ArrayList<PrintStream>();
-        sensorsFRDManaging = new SensorsFRDManaging();
-//        dataBaseFRDManaging = new DataBaseFRDManaging();
     }
 
     public void executa () throws IOException {
         ServerSocket serverSocket = new ServerSocket(this.porta);
         System.out.println("Conectado na porta: "+porta);
 
+        sensorsFRDManaging = new SensorsFRDManaging(this);
 
         while (!clientIsOff) {
 
 //            sensorsFRDManaging.getAllSensors();
+//            sensorsFRDManaging.checkConnection();
             sensorsFRDManaging.getSensorChildFRD();
-//            dataBaseFRDManaging.getAllUsers();
-//            dataBaseFRDManaging.getUserFRD();
-//            dataBaseFRDManaging.writeUserFRD();
 
             // aceita um client
             Socket client = serverSocket.accept();
@@ -53,7 +52,7 @@ public class ServerClass {
             InputStream clientInput = client.getInputStream();
 
             // cria tratamento de msgs recebidas numa nova thread
-            TreatSensorsMsg tc = new TreatSensorsMsg(clientInput, this);
+            TreatSensorsMsg tc = new TreatSensorsMsg(clientInput, this, sensorsFRDManaging);
             new Thread(tc).start();
         }
     }
