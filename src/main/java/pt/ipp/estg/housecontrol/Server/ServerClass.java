@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ipp.estg.housecontrol.FirebaseClasses.SensorsFRDManaging;
+import pt.ipp.estg.housecontrol.Sensors.Log;
 
 public class ServerClass {
 
@@ -28,6 +29,7 @@ public class ServerClass {
 
     public void executa () throws IOException {
         ServerSocket serverSocket = new ServerSocket(this.porta);
+        // TODO deixar pro final, não consegui buscar a var porta
         System.out.println("Conectado na porta: "+porta);
 
         sensorsFRDManaging = new SensorsFRDManaging(this);
@@ -66,7 +68,7 @@ public class ServerClass {
         for (PrintStream client : this.clientsList) {
 //            msg = "[Server sent] " + msg;
             client.println(msg);
-            System.out.println("[Client Msg sent] "+msg);
+            Log.message("[Client Msg sent] " + msg);
 
         }
     }

@@ -10,13 +10,14 @@ import pt.ipp.estg.housecontrol.Sensors.HVAC;
 import pt.ipp.estg.housecontrol.Sensors.Light;
 import pt.ipp.estg.housecontrol.Sensors.Sensor;
 
-import static pt.ipp.estg.housecontrol.Sensors.TreatMsgReceived.parseData;
+import pt.ipp.estg.housecontrol.Sensors.ServerHome;
 
 public class TreatSensorsMsg implements Runnable {
 
     private InputStream cliInpt = null;
     private ServerClass serverClass;
     private SensorsFRDManaging sensorsFRDManaging;
+    private ServerHome serverHome =  new ServerHome();
 
     public TreatSensorsMsg(InputStream clientInput, ServerClass serverClass,SensorsFRDManaging sensorsFRDManaging) throws IOException {
         this.cliInpt = clientInput;
@@ -32,7 +33,7 @@ public class TreatSensorsMsg implements Runnable {
         while (s.hasNextLine()) {
             String msg = String.valueOf(s.nextLine());
 //            serverClass.sendMessage(msg);
-            Sensor recData = parseData(msg);
+            Sensor recData = serverHome.parseData(msg);
 
             try {
                 prepareSensorDataToWriteFRD(recData);
