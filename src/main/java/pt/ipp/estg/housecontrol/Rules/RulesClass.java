@@ -10,6 +10,7 @@ import pt.ipp.estg.housecontrol.Sensors.Sensor;
 
 import static pt.ipp.estg.housecontrol.FirebaseClasses.CloudMessagingClass.sendFCMNewData;
 import static pt.ipp.estg.housecontrol.FirebaseClasses.SensorsFRDManaging.getSensorSingleEvent;
+import static pt.ipp.estg.housecontrol.FirebaseClasses.SensorsFRDManaging.writeSensorFRD;
 
 public class RulesClass {
 
@@ -60,14 +61,44 @@ public class RulesClass {
                 boolean hvacIsOn = ((HVAC) sensor).isOn();
                 Sensor temperature = getSensorSingleEvent("temperature");
 
-                System.out.println("++++ hvacIsOn: "+hvacIsOn);
-                System.out.println("++++ temperature: "+temperature);
 
                 if(temperature != null){
-                    if (hvacIsOn == true && temperature.getValue() > 19 && temperature.getValue() < 25) {
+                    if (hvacIsOn == true && temperature.getValue() > 19 && temperature.getValue() < 26) {
                         sendFCMNewData("<<Alerta de gasto>> HVAC!", "Atenção, HVAC ligado com temperatura de " + sensor.getValue()+"º, gerando gasto excessivo!!!");
                     }
                 }
+                break;
+        }
+    }
+
+
+    /**
+     * classifica o dado do sensor recebido pela ThreadSensorsData e salva no nó correspondente
+     */
+
+    public void classifyDataToWriteFRD(Sensor mSensor) throws IOException {
+
+        switch(mSensor.getSensorClass()) {
+            case 0:
+                writeSensorFRD("temperature", String.valueOf(mSensor));
+                break;
+
+            case 1:
+                writeSensorFRD("blinder", String.valueOf(mSensor));
+                break;
+
+            // door
+            case 2:
+                writeSensorFRD("door", String.valueOf(mSensor));
+                break;
+
+            // Light
+            case 3:
+                writeSensorFRD("light", String.valueOf(mSensor));
+                break;
+
+            case 4:
+                writeSensorFRD("hvac", String.valueOf(mSensor));
                 break;
         }
     }

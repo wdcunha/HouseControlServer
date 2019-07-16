@@ -8,8 +8,6 @@ public class ServerHome {
 
 	public static Sensor parseData(String szResponseLine) {
 
-		Log.message("Parsing data: " + szResponseLine);
-
 		if (szResponseLine == null || szResponseLine.length() < 5) {
 			return null;
 		}

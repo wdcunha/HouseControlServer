@@ -1,37 +1,54 @@
 package pt.ipp.estg.housecontrol;
 
+import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import pt.ipp.estg.housecontrol.Sensors.Sensor;
+import pt.ipp.estg.housecontrol.Sensors.ServerHome;
 
 public aspect SystemLog {
 
+
 	/****************************************************************************
 	 *
-	 * my_pointcut_messaging
+	 * my_pointcut_executaServerSocketClass
 	 *
 	 */
 
-	pointcut my_pointcut_executaServerClass(int porta) : execution(* executa());
+	pointcut my_pointcut_executaServerSocketClass(int porta) : execution(* createServerConnection(int))
+			&& args(porta) ;
 
-	before(int porta) : my_pointcut_executaServerClass() {
+	before(int porta) : my_pointcut_executaServerSocketClass(porta) {
 
 
-		System.out.println("Entering: " + thisJoinPoint);
-		System.out.println(getCurrentDate() + "[ Aj ] Conectado na porta: "+porta);
+		System.out.println(getCurrentDate() + "[ Aj ] Conectado à porta: "+porta);
 	}
 
 
 	/****************************************************************************
 	 *
+	 * my_pointcut_executaCreateClientConnection
+	 *
+	 */
+
+	pointcut my_pointcut_executaCreateClientConnection() : execution(* createClientConnection(..));
+
+	after() returning (Socket client): my_pointcut_executaCreateClientConnection() {
+
+
+		System.out.println(getCurrentDate() + "[ Aj ] Nova conexão com o client em: "+client);
+	}
+
+	/****************************************************************************
+	 *
 	 * my_pointcut_messaging
 	 *
 	 */
 
-	pointcut my_pointcut_messaging() : execution(* sendFCMNewData());
+	pointcut my_pointcut_messaging() : execution(* sendFCMNewData(..));
 
-	after() returning(Boolean cond) : my_pointcut_messaging() {
+	after() returning(boolean cond) : my_pointcut_messaging() {
 
 		if (cond) {
 
@@ -49,7 +66,7 @@ public aspect SystemLog {
 	 *
 	 */
 
-	pointcut my_pointcut_writeToFRD(Sensor mSensor) : execution(* prepareSensorDataToWriteFRD(Sensor))
+	pointcut my_pointcut_writeToFRD(Sensor mSensor) : execution(* classifyDataToWriteFRD(Sensor))
 			&& args(mSensor);
 
 	before(Sensor mSensor) : my_pointcut_writeToFRD(mSensor) {
@@ -63,12 +80,12 @@ public aspect SystemLog {
 	 *
 	 */
 
-	pointcut my_pointcut_sendMsgHomeBus(String msg) : execution(* sendMessage(String))
+	pointcut my_pointcut_sendMsgHomeBus(String msg) : execution(* sendToHomeBus(String))
 			&& args(msg);
 
 	after(String msg) : my_pointcut_sendMsgHomeBus(msg) {
 
-		System.out.println(getCurrentDate() + "[ Aj ] Client Msg sent: " + msg);
+		System.out.println(getCurrentDate() + "[ Aj ] Sensor data sent to Home Bus: " + msg);
 	}
 
 	/****************************************************************************
@@ -77,12 +94,14 @@ public aspect SystemLog {
 	 *
 	 */
 
-	pointcut my_pointcut_parseData(String szResponseLine) : execution(* parseData(String))
-			&& args(szResponseLine);
+	pointcut my_pointcut_parseData(ServerHome serverHome, String szResponseLine) : execution(* parseData(String))
+			&& args(serverHome, szResponseLine) && target(clientTargetDesl);
 
-	around(String szResponseLine) : my_pointcut_parseData(szResponseLine) {
+	before(ServerHome serverHome, String szResponseLine)  returning(Sensor mSensor) : my_pointcut_parseData(serverHome, szResponseLine) {
 
 		System.out.println(getCurrentDate() + "[ Aj ] Parsing data: " + szResponseLine);
+		System.out.println(getCurrentDate() + "[ Aj ] serverHome: " + serverHome);
+		System.out.println(getCurrentDate() + "[ Aj ] mSensor: " + mSensor);
 	}
 
 
@@ -90,7 +109,6 @@ public aspect SystemLog {
 
 	public static String getCurrentDate() {
 
-		// SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy' 'HH:mm:ss");
 		String timeStamp = "["+simpleDateFormat.format(new Date()) + "]";
 

@@ -17,17 +17,12 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
+
 public class CloudMessagingClass {
 
     private static String[] SCOPES = { "https://www.googleapis.com/auth/firebase.messaging"};
 
-//    private static String title;
-//    private static String message;
-
-
     public CloudMessagingClass() {
-//        this.title = title;
-//        this.message = message;
 
     }
 
@@ -44,6 +39,7 @@ public class CloudMessagingClass {
         Path path = Paths.get(nomeArquivo);
 
         List<String> allLines = Files.readAllLines(path);
+
         for (String line : allLines) {
             tokenApp = line.replace("token: ","");
 
@@ -56,7 +52,6 @@ public class CloudMessagingClass {
         HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
         httpURLConnection.setDoOutput(true);
         httpURLConnection.setRequestMethod("POST");
-//        httpURLConnection.setConnectTimeout(10000);
         httpURLConnection.setRequestProperty("Authorization", "Bearer " + token);
         httpURLConnection.setRequestProperty("Content-Type", "application/json; UTF-8");
 
@@ -69,7 +64,7 @@ public class CloudMessagingClass {
 
         int httpResult = httpURLConnection.getResponseCode();
 
-        Boolean cond = false;
+        boolean cond = false;
 
         if(httpResult == HttpURLConnection.HTTP_OK){
             BufferedReader bufferedReader = new BufferedReader(
@@ -82,16 +77,13 @@ public class CloudMessagingClass {
                 sb.append(line + "\n");
             }
 
-            System.out.println("Message sent succesfully!!!!");
             bufferedReader.close();
             httpURLConnection.disconnect();
-            //return httpURLConnection.toString();
             cond = true;
 
             return cond;
         } else {
             httpURLConnection.disconnect();
-            //return httpURLConnection.getResponseMessage();
             cond = false;
 
             return cond;
@@ -99,11 +91,16 @@ public class CloudMessagingClass {
 
     }
 
+    /**
+     * Token necessário para o envio de notificação pelo FCM, que dá o privilégio necessário
+     */
+
     private static String getAccessToken() throws IOException {
         GoogleCredential myGoogleCredential = GoogleCredential
                 .fromStream(new FileInputStream("/Users/wdcunha/ESTG/2osemestre/Des Web/TrabalhoFinal/HouseControlServer/src/main/resources/housecontrolmobile-firebase-adminsdk-qv0hl-0ab5cb2e4d.json"))
                 .createScoped(Arrays.asList(SCOPES));
         myGoogleCredential.refreshToken();
+
         return myGoogleCredential.getAccessToken();
     }
 

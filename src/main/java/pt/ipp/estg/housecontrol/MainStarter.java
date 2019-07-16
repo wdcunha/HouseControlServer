@@ -2,12 +2,12 @@ package pt.ipp.estg.housecontrol;
 
 import java.io.IOException;
 
-import pt.ipp.estg.housecontrol.Server.ServerClass;
+import pt.ipp.estg.housecontrol.Server.ServerSocketClass;
 
 class MainStarter {
     public static void main(String[] args) throws IOException {
 
-        new ServerClass(3000).executa();
+        new ServerSocketClass(3000).executa();
 
     }
 }

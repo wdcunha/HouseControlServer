@@ -10,14 +10,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.sun.scenario.effect.impl.prism.PrImage;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import pt.ipp.estg.housecontrol.Sensors.Sensor;
-import pt.ipp.estg.housecontrol.Server.ServerClass;
+import pt.ipp.estg.housecontrol.Server.ServerSocketClass;
 import static pt.ipp.estg.housecontrol.Sensors.ServerHome.parseData;
 
 public class SensorsFRDManaging {
@@ -25,10 +24,11 @@ public class SensorsFRDManaging {
 
     private FirebaseDatabase database;
     private static DatabaseReference sensorsRef;
-    private ServerClass serverClass;
+    private ServerSocketClass serverSocketClass;
     private static String sensorValue;
+    private boolean bConnected;
 
-    public SensorsFRDManaging(ServerClass serverClass) throws IOException, FileNotFoundException {
+    public SensorsFRDManaging(ServerSocketClass serverSocketClass) throws IOException, FileNotFoundException {
 
         FileInputStream serviceAccount = new FileInputStream("/Users/wdcunha/ESTG/2osemestre/Des Web/TrabalhoFinal/HouseControlServer/src/main/resources/housecontrolmobile-firebase-adminsdk-qv0hl-0ab5cb2e4d.json");
 
@@ -41,32 +41,33 @@ public class SensorsFRDManaging {
 
         database = FirebaseDatabase.getInstance();
 
+        // check connection status
 //        database.setPersistenceEnabled(true);
 
         sensorsRef  = database.getReference("Sensor");
 
-        this.serverClass = serverClass;
+        this.serverSocketClass = serverSocketClass;
 
     }
 
-    public void checkConnection() throws IOException {
+    public boolean checkConnection() throws IOException {
         DatabaseReference myReference =
                 FirebaseDatabase.getInstance().getReference(".info/connected");
         myReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot myData) {
-                boolean bConnected = myData.getValue(Boolean.class);
-                // TODO - ver se coloca no aj, mas tem que descomentar a chamada pra este método
+                bConnected = myData.getValue(Boolean.class);
                 System.out.println("bConnected: "+bConnected);
             }
             @Override
             public void onCancelled(DatabaseError error) { }
         });
+
+        return bConnected;
     }
 
     public void getAllSensors() throws IOException {
 
-        //TODO ver se será necessário este listener, senão, excluir, por ora ñ tem uso, só o child (abaixo)
         sensorsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -100,7 +101,7 @@ public class SensorsFRDManaging {
                 if (dataSnapshot.exists()) {
                     System.out.println("dataSnapshot.exists");
                 }
-                serverClass.sendToHomeBus(dataSnapshot.getValue().toString());
+                serverSocketClass.sendToHomeBus(dataSnapshot.getValue().toString());
 
                 // chama método para verificar que sensor é, como há mais de uma situação, evita repetição de código
                 whatSensor(dataSnapshot.getKey(), dataSnapshot.getValue().toString());
@@ -126,13 +127,13 @@ public class SensorsFRDManaging {
         });    }
 
 
-    public void writeSensorFRD(String sensor, String value) throws IOException {
+    public static void writeSensorFRD(String sensor, String value) throws IOException {
 
         sensorsRef.child("server").child(sensor).setValue(value, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if (databaseError != null) {
-                    System.out.println("Data could not be saved " + databaseError.getMessage());
+                    System.out.println("Data could not be saved " + databaseError.getMessage()+databaseReference);
                 } else {
                     // TODO --> fazer prints no Aj
                     System.out.println("--> Data saved successfully: "+sensor+" "+value + " - databaseReference: "+ databaseReference);
@@ -159,8 +160,6 @@ public class SensorsFRDManaging {
 
             }
         });
-
-        System.out.println("++++sensorValue: "+sensorValue);
 
         return parseData(sensorValue);
     }
