@@ -6,7 +6,7 @@ public class ServerHome {
 
 	}
 
-	public Sensor parseData(String szResponseLine) {
+	public static Sensor parseData(String szResponseLine) {
 
 		Log.message("Parsing data: " + szResponseLine);
 

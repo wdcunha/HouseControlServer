@@ -36,6 +36,7 @@ public class ServerClass {
 
         while (!clientIsOff) {
 
+            // TODO - ver se esses dois método são realmente desnecessários e tratar
 //            sensorsFRDManaging.getAllSensors();
 //            sensorsFRDManaging.checkConnection();
             sensorsFRDManaging.getSensorChildFRD();
@@ -63,11 +64,12 @@ public class ServerClass {
         this.clientIsOff = clientIsOff;
     }
 
-    public void sendMessage(String msg) {
+    public void sendToHomeBus(String msg) {
 
         for (PrintStream client : this.clientsList) {
 //            msg = "[Server sent] " + msg;
             client.println(msg);
+            // TODO - Aj imprimir msg e exluir a linha acima comentada
             Log.message("[Client Msg sent] " + msg);
 
         }

@@ -1,28 +1,0 @@
-
-^squid:UnusedPrivateMethodb"3Remove this unused private "sendFCMNewData" method.( ³¦88‰è–÷¸-
-¬%squid:RedundantThrowsDeclarationCheck\"oRemove the declaration of thrown exception 'org.json.JSONException', as it cannot be thrown from method's body.(ÕŠ’Üüÿÿÿÿ8‰è–÷¸-
-¦%squid:RedundantThrowsDeclarationCheckb"oRemove the declaration of thrown exception 'org.json.JSONException', as it cannot be thrown from method's body.( ³¦88‰è–÷¸-
-osquid:S3008"QRename this field "SCOPES" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(æ›®ú8‰è–÷¸-
-isquid:CommentedOutCodeLine^"<This block of commented-out lines of code should be removed.(´Ä¼ò8‰è–÷¸-
-isquid:CommentedOutCodeLineo"<This block of commented-out lines of code should be removed.(ÀŒå8‰è–÷¸-
-jsquid:CommentedOutCodeLineˆ"<This block of commented-out lines of code should be removed.(ô’‰·8‰è–÷¸-
-osquid:CommentedOutCodeLineŒ"<This block of commented-out lines of code should be removed.(ê¦ú×þÿÿÿÿ8‰è–÷¸-
-[
-squid:S106,"9Replace this use of System.out or System.err by a logger.(ƒû¸Âüÿÿÿÿ8‰è–÷¸-
-[
-squid:S1062"9Replace this use of System.out or System.err by a logger.(µÉó…úÿÿÿÿ8‰è–÷¸-
-[
-squid:S1066"9Replace this use of System.out or System.err by a logger.(‰ÆÇÿûÿÿÿÿ8‰è–÷¸-
-U
-squid:S1067"9Replace this use of System.out or System.err by a logger.(óÕäB8‰è–÷¸-
-[
-squid:S106="9Replace this use of System.out or System.err by a logger.(þàûûúÿÿÿÿ8‰è–÷¸-
-U
-squid:S106j"9Replace this use of System.out or System.err by a logger.(³Ë‘G8‰è–÷¸-
-\
-squid:S106…"9Replace this use of System.out or System.err by a logger.(¥òÚ°ÿÿÿÿÿ8‰è–÷¸-
-Ssquid:S1481*"0Remove this unused "userDataFRD" local variable.(«ë”—øÿÿÿÿ8‰è–÷¸-
-Qsquid:S1481X".Remove this unused "sensorRef" local variable.(Ã†³×üÿÿÿÿ8‰è–÷¸-
-`squid:S1854X"=Remove this useless assignment to local variable "sensorRef".(Ã†³×üÿÿÿÿ8‰è–÷¸-
-bsquid:S1854*"?Remove this useless assignment to local variable "userDataFRD".(«ë”—øÿÿÿÿ8‰è–÷¸-
-`squid:UselessImportCheck"0Remove this unused import 'org.json.JSONObject'.(œÖ´üþÿÿÿÿ8‰è–÷¸-

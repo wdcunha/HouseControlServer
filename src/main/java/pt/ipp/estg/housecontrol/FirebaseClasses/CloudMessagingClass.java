@@ -1,7 +1,10 @@
 package pt.ipp.estg.housecontrol.FirebaseClasses;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+
+import org.json.JSONException;
+
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,37 +14,24 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
-import org.json.JSONException;
-
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-
-class CloudMessaging {
+public class CloudMessagingClass {
 
     private static String[] SCOPES = { "https://www.googleapis.com/auth/firebase.messaging"};
 
-    private static String title;
-    private static String message;
+//    private static String title;
+//    private static String message;
 
 
-    public CloudMessaging(String title, String message) {
-        this.title = title;
-        this.message = message;
+    public CloudMessagingClass() {
+//        this.title = title;
+//        this.message = message;
 
-        try {
-            sendFCMNewData();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
-    public static boolean sendFCMNewData() throws IOException, JSONException {
+    public static boolean sendFCMNewData(String title, String message) throws IOException, JSONException {
         
         URL url = new URL("https://fcm.googleapis.com/v1/projects/housecontrolmobile/messages:send");
 
@@ -49,9 +39,6 @@ class CloudMessaging {
 
         String tokenApp_t = appToken.toString();
         String nomeArquivo = "/Users/wdcunha/ESTG/2osemestre/Des Web/TrabalhoFinal/HouseControlServer/src/main/resources/appToken";
-
-        title = "sixth message from HCServer";
-        message = "Notificação FCM enviada pelo HCServer!";
 
         String tokenApp = "";
         Path path = Paths.get(nomeArquivo);
@@ -95,7 +82,7 @@ class CloudMessaging {
                 sb.append(line + "\n");
             }
 
-//            System.out.println(getCurrentDate()+"Message sent succesfully!!!!");
+            System.out.println("Message sent succesfully!!!!");
             bufferedReader.close();
             httpURLConnection.disconnect();
             //return httpURLConnection.toString();
@@ -114,15 +101,10 @@ class CloudMessaging {
 
     private static String getAccessToken() throws IOException {
         GoogleCredential myGoogleCredential = GoogleCredential
-                .fromStream(new FileInputStream("/Users/wdcunha/ESTG/2osemestre/Des Web/TrabalhoFinal/HouseControlServer/src/main/resources/housecontrolmobile-firebase-adminsdk-qv0hl-b0b6bf3ff5.json"))
+                .fromStream(new FileInputStream("/Users/wdcunha/ESTG/2osemestre/Des Web/TrabalhoFinal/HouseControlServer/src/main/resources/housecontrolmobile-firebase-adminsdk-qv0hl-0ab5cb2e4d.json"))
                 .createScoped(Arrays.asList(SCOPES));
         myGoogleCredential.refreshToken();
         return myGoogleCredential.getAccessToken();
     }
 
-
-    public static void main(String[] args) throws IOException, JSONException {
-
-        sendFCMNewData();
-    }
 }

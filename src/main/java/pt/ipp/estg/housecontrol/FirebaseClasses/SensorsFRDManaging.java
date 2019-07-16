@@ -10,19 +10,23 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.sun.scenario.effect.impl.prism.PrImage;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import pt.ipp.estg.housecontrol.Sensors.Sensor;
 import pt.ipp.estg.housecontrol.Server.ServerClass;
+import static pt.ipp.estg.housecontrol.Sensors.ServerHome.parseData;
 
 public class SensorsFRDManaging {
 
 
     private FirebaseDatabase database;
-    private DatabaseReference sensorsRef;
+    private static DatabaseReference sensorsRef;
     private ServerClass serverClass;
+    private static String sensorValue;
 
     public SensorsFRDManaging(ServerClass serverClass) throws IOException, FileNotFoundException {
 
@@ -52,6 +56,7 @@ public class SensorsFRDManaging {
             @Override
             public void onDataChange(DataSnapshot myData) {
                 boolean bConnected = myData.getValue(Boolean.class);
+                // TODO - ver se coloca no aj, mas tem que descomentar a chamada pra este método
                 System.out.println("bConnected: "+bConnected);
             }
             @Override
@@ -61,8 +66,6 @@ public class SensorsFRDManaging {
 
     public void getAllSensors() throws IOException {
 
-        System.out.println("sensorsRef: "+sensorsRef);
-
         //TODO ver se será necessário este listener, senão, excluir, por ora ñ tem uso, só o child (abaixo)
         sensorsRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -70,31 +73,8 @@ public class SensorsFRDManaging {
 
                 for (DataSnapshot ds : dataSnapshot.getChildren()){
 
-//                    Object obj = dataSnapshot.getValue();
-//                    System.out.println("object: "+obj);
-//
-                    switch (ds.getKey()){
-                        case "blinder":
-                            System.out.println("blinder getKey: "+ds.getKey());
-                            System.out.println("blinder getValue: "+ds.getValue().toString());
-                            break;
-                        case "door":
-                            System.out.println("door getKey: "+ds.getKey());
-                            System.out.println("door getValue: "+ds.getValue().toString());
-                            break;
-                        case "hvac":
-                            System.out.println("hvac getKey: "+ds.getKey());
-                            System.out.println("hvac getValue: "+ds.getValue().toString());
-                            break;
-                        case "light":
-                            System.out.println("light getKey: "+ds.getKey());
-                            System.out.println("light getValue: "+ds.getValue().toString());
-                            break;
-                        case "temperature":
-                            System.out.println("temperature getKey: "+ds.getKey());
-                            System.out.println("temperature getValue: "+ds.getValue().toString());
-                            break;
-                    }
+                    whatSensor(dataSnapshot.getKey(), dataSnapshot.getValue().toString());
+
                 }
             }
 
@@ -120,30 +100,10 @@ public class SensorsFRDManaging {
                 if (dataSnapshot.exists()) {
                     System.out.println("dataSnapshot.exists");
                 }
-                serverClass.sendMessage(dataSnapshot.getValue().toString());
+                serverClass.sendToHomeBus(dataSnapshot.getValue().toString());
 
-                switch (dataSnapshot.getKey()){
-                    case "blinder":
-                        System.out.println("blinder getKey: "+dataSnapshot.getKey());
-                        System.out.println("blinder getValue: "+dataSnapshot.getValue().toString());
-                        break;
-                    case "door":
-                        System.out.println("door getKey: "+dataSnapshot.getKey());
-                        System.out.println("door getValue: "+dataSnapshot.getValue().toString());
-                        break;
-                    case "hvac":
-                        System.out.println("hvac getKey: "+dataSnapshot.getKey());
-                        System.out.println("hvac getValue: "+dataSnapshot.getValue().toString());
-                        break;
-                    case "light":
-                        System.out.println("light getKey: "+dataSnapshot.getKey());
-                        System.out.println("light getValue: "+dataSnapshot.getValue().toString());
-                        break;
-                    case "temperature":
-                        System.out.println("temperature getKey: "+dataSnapshot.getKey());
-                        System.out.println("temperature getValue: "+dataSnapshot.getValue().toString());
-                        break;
-                }
+                // chama método para verificar que sensor é, como há mais de uma situação, evita repetição de código
+                whatSensor(dataSnapshot.getKey(), dataSnapshot.getValue().toString());
             }
 
             @Override
@@ -168,18 +128,6 @@ public class SensorsFRDManaging {
 
     public void writeSensorFRD(String sensor, String value) throws IOException {
 
-//        sensorsRef.child(sensor).setValue(value, new DatabaseReference.CompletionListener() {
-//            @Override
-//            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-//                if (databaseError != null) {
-//                    System.out.println("Data could not be saved " + databaseError.getMessage());
-//                } else {
-//                    // TODO --> fazer prints no Aj
-//                    System.out.println("--> Data saved successfully: "+sensor+" "+value + " - databaseReference: "+ databaseReference);
-//                }
-//            }
-//        });
-
         sensorsRef.child("server").child(sensor).setValue(value, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
@@ -191,34 +139,57 @@ public class SensorsFRDManaging {
                 }
             }
         });
+    }
 
-//        String sensorIdent = sensor + "_id";
-//
-//        sensorsRef.child(sensorIdent).setValue(identifier, new DatabaseReference.CompletionListener() {
-//            @Override
-//            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-//                if (databaseError != null) {
-//                    System.out.println("Data could not be saved " + databaseError.getMessage());
-//                } else {
-//                    // TODO --> fazer prints no Aj
-//                    System.out.println("--> Data saved successfully: identifier "+identifier);
-//                }
-//            }
-//        });
-//
-//        String sensorFrom = sensor + "_from";
-//
-//        sensorsRef.child(sensorFrom).setValue("server", new DatabaseReference.CompletionListener() {
-//            @Override
-//            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-//                if (databaseError != null) {
-//                    System.out.println("Data could not be saved " + databaseError.getMessage());
-//                } else {
-//                    // TODO --> fazer prints no Aj
-//                    System.out.println("--> Data saved successfully: from server");
-//                }
-//            }
-//        });
+    /**
+     * Lê apenas um evento do sensor informado, que será carregado como node da pesquisa
+     */
+    public static Sensor getSensorSingleEvent(String sensorNode) {
+
+
+        sensorsRef.child("server").child(sensorNode).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                sensorValue = dataSnapshot.getValue().toString();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        System.out.println("++++sensorValue: "+sensorValue);
+
+        return parseData(sensorValue);
+    }
+
+    public void whatSensor(String key, String value) {
+        switch (key){
+            // TODO --> fazer prints no Aj
+            case "blinder":
+                System.out.println("blinder getKey: "+key);
+                System.out.println("blinder getValue: "+value);
+                break;
+            case "door":
+                System.out.println("door getKey: "+key);
+                System.out.println("door getValue: "+value);
+                break;
+            case "hvac":
+                System.out.println("hvac getKey: "+key);
+                System.out.println("hvac getValue: "+value);
+                break;
+            case "light":
+                System.out.println("light getKey: "+key);
+                System.out.println("light getValue: "+value);
+                break;
+            case "temperature":
+                System.out.println("temperature getKey: "+key);
+                System.out.println("temperature getValue: "+value);
+                break;
+        }
+
     }
 
 }

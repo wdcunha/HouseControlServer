@@ -1,15 +1,17 @@
 package pt.ipp.estg.housecontrol.Server;
 
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
 import pt.ipp.estg.housecontrol.FirebaseClasses.SensorsFRDManaging;
+import pt.ipp.estg.housecontrol.Rules.RulesClass;
 import pt.ipp.estg.housecontrol.Sensors.Door;
 import pt.ipp.estg.housecontrol.Sensors.HVAC;
 import pt.ipp.estg.housecontrol.Sensors.Light;
 import pt.ipp.estg.housecontrol.Sensors.Sensor;
-
 import pt.ipp.estg.housecontrol.Sensors.ServerHome;
 
 public class TreatSensorsMsg implements Runnable {
@@ -18,6 +20,7 @@ public class TreatSensorsMsg implements Runnable {
     private ServerClass serverClass;
     private SensorsFRDManaging sensorsFRDManaging;
     private ServerHome serverHome =  new ServerHome();
+    private RulesClass rulesClass = new RulesClass();
 
     public TreatSensorsMsg(InputStream clientInput, ServerClass serverClass,SensorsFRDManaging sensorsFRDManaging) throws IOException {
         this.cliInpt = clientInput;
@@ -32,15 +35,19 @@ public class TreatSensorsMsg implements Runnable {
 
         while (s.hasNextLine()) {
             String msg = String.valueOf(s.nextLine());
-//            serverClass.sendMessage(msg);
+//            serverClass.sendToHomeBus(msg);
             Sensor recData = serverHome.parseData(msg);
 
             try {
+                rulesClass.checkSensorsToSendFCM(recData);
                 prepareSensorDataToWriteFRD(recData);
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
 
+            // TODO - retirar essa msg antes de enviar o trabalho
             System.out.println("[Client Msg received] "+msg);
         }
         serverClass.setClientIsOff(true);
