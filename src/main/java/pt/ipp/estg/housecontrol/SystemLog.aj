@@ -94,14 +94,15 @@ public aspect SystemLog {
 	 *
 	 */
 
-	pointcut my_pointcut_parseData(ServerHome serverHome, String szResponseLine) : execution(* parseData(String))
-			&& args(serverHome, szResponseLine) && target(clientTargetDesl);
+	pointcut my_pointcut_parseData(String szResponseLine)
+			: execution(* parseData(String))
+			&& args(szResponseLine);
 
-	before(ServerHome serverHome, String szResponseLine)  returning(Sensor mSensor) : my_pointcut_parseData(serverHome, szResponseLine) {
+	after(String szResponseLine) returning (Sensor mSensor): my_pointcut_parseData(szResponseLine) {
 
 		System.out.println(getCurrentDate() + "[ Aj ] Parsing data: " + szResponseLine);
-		System.out.println(getCurrentDate() + "[ Aj ] serverHome: " + serverHome);
-		System.out.println(getCurrentDate() + "[ Aj ] mSensor: " + mSensor);
+
+
 	}
 
 
