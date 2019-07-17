@@ -57,7 +57,6 @@ public class SensorsFRDManaging {
             @Override
             public void onDataChange(DataSnapshot myData) {
                 bConnected = myData.getValue(Boolean.class);
-                System.out.println("bConnected: "+bConnected);
             }
             @Override
             public void onCancelled(DatabaseError error) { }

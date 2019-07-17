@@ -100,11 +100,26 @@ public aspect SystemLog {
 
 	after(String szResponseLine) returning (Sensor mSensor): my_pointcut_parseData(szResponseLine) {
 
-		System.out.println(getCurrentDate() + "[ Aj ] Parsing data: " + szResponseLine);
+		System.out.println(getCurrentDate() + "[ Aj ] Parsing data received: " + szResponseLine);
 
 
 	}
 
+
+	/****************************************************************************
+	 *
+	 * my_pointcut_checkConnection
+	 *
+	 */
+
+	pointcut my_pointcut_checkConnection() : execution(* checkConnection());
+
+	after() returning (boolean bConnected): my_pointcut_checkConnection() {
+
+		System.out.println(getCurrentDate() + "[ Aj ] Conexão status: " + bConnected);
+
+
+	}
 
 
 

@@ -30,13 +30,15 @@ public class ThreadSensorsData implements Runnable {
         // send message when received
         Scanner s = new Scanner(this.cliInpt);
 
+
         while (s.hasNextLine()) {
             String msg = String.valueOf(s.nextLine());
-            Sensor recData = serverHome.parseData(msg);
+            Sensor recDada = treatRecData(msg);
+
 
             try {
-                rulesClass.checkSensorsToSendFCM(recData);
-                rulesClass.classifyDataToWriteFRD(recData);
+                rulesClass.checkSensorsToSendFCM(recDada);
+                rulesClass.classifyDataToWriteFRD(recDada);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
@@ -49,6 +51,12 @@ public class ThreadSensorsData implements Runnable {
         serverSocketClass.setClientIsOff(true);
         s.close();
     }
+
+    public Sensor treatRecData(String msg) {
+
+        return serverHome.parseData(msg);
+    }
+
 
     public void takeMsgReturnSensor() {
         
